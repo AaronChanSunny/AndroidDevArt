@@ -1,2 +1,5 @@
-# AndroidDevArt
-Android 开发艺术探索读书笔记
+# 『Android 开发艺术探索』
+
+## 传送门
+
+- [第2章 IPC机制](https://github.com/AaronChanSunny/AndroidDevArt/tree/chapter-2)
