@@ -30,9 +30,18 @@
                 android:value="com.aaron.androiddevart.MainActivity"/>
         </activity>
         <activity
-            android:process="com.aaron.androiddevart.remote"
             android:name=".ThirdActivity"
             android:label="@string/title_activity_third"
+            android:parentActivityName=".MainActivity"
+            android:process="com.aaron.androiddevart.remote"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aaron.androiddevart.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".ObjectSerialActivity"
+            android:label="@string/title_activity_object_serial"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
