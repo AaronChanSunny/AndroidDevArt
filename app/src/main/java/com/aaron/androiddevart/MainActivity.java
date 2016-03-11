@@ -10,6 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -31,6 +34,36 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SecondActivity.class));
             }
         });
+    }
+
+    private void saveObject() {
+        ObjectOutputStream os = null;
+        try {
+            os = new ObjectOutputStream(openFileOutput(Config.CACHE_FILE, MODE_PRIVATE));
+            User user = new User(0, "Jack", true);
+            os.writeObject(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveObject();
+            }
+        }).start();
     }
 
     @Override
