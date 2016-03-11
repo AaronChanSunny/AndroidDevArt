@@ -48,6 +48,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.aaron.androiddevart.MainActivity"/>
         </activity>
+
+        <service
+            android:name=".MessengerService"
+            android:process=":messenger"/>
+
+        <activity
+            android:name=".MessengerActivity"
+            android:label="@string/title_activity_messenger"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aaron.androiddevart.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

@@ -13,7 +13,7 @@ import android.view.View;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SecondActivity.class));
             }
         });
+
+        findViewById(R.id.messenger_button).setOnClickListener(this);
     }
 
     private void saveObject() {
@@ -88,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.messenger_button:
+                startActivity(new Intent(this, MessengerActivity.class));
+                break;
+            default:
         }
     }
 }
