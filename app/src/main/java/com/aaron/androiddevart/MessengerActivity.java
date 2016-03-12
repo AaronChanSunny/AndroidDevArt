@@ -26,7 +26,7 @@ public class MessengerActivity extends AppCompatActivity {
             mService = new Messenger(service);
             Message msg = Message.obtain(null, Config.MSG_FROM_CLIENT);
             Bundle data = new Bundle();
-            data.putString("msg", "hello, this is client.");
+            data.putString("msg", "你好，这是来自客户端的请求。");
             msg.setData(data);
             msg.replyTo = mMessenger;
             try {

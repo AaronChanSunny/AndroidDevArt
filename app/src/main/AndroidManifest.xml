@@ -52,10 +52,22 @@
         <service
             android:name=".MessengerService"
             android:process=":messenger"/>
+        <service
+            android:name=".BookManagerService"
+            android:process=":book"/>
 
         <activity
             android:name=".MessengerActivity"
             android:label="@string/title_activity_messenger"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aaron.androiddevart.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".BookManagerActivity"
+            android:label="@string/title_activity_book_manager"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

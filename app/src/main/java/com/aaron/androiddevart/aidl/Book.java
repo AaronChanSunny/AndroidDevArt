@@ -31,7 +31,6 @@ public class Book implements Parcelable {
         mName = name;
     }
 
-
     @Override
     public int describeContents() {
         return 0;

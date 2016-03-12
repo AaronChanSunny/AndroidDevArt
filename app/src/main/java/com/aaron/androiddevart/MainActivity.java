@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         findViewById(R.id.messenger_button).setOnClickListener(this);
+        findViewById(R.id.book_button).setOnClickListener(this);
     }
 
     private void saveObject() {
@@ -98,6 +99,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.messenger_button:
                 startActivity(new Intent(this, MessengerActivity.class));
+                break;
+            case R.id.book_button:
+                startActivity(new Intent(this, BookManagerActivity.class));
                 break;
             default:
         }

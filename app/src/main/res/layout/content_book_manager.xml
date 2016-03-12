@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,20 +10,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.aaron.androiddevart.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.aaron.androiddevart.BookManagerActivity"
+    tools:showIn="@layout/activity_book_manager">
 
-    <Button
-        android:text="Messenger"
-        android:textAllCaps="false"
-        android:id="@+id/messenger_button"
+    <ListView
+        android:id="@+id/books"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:text="Book Manager"
-        android:id="@+id/book_button"
-        android:textAllCaps="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        android:layout_height="match_parent"/>
+</RelativeLayout>
