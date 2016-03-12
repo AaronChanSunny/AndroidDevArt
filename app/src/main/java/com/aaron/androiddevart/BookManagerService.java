@@ -2,6 +2,7 @@ package com.aaron.androiddevart;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -99,6 +100,11 @@ public class BookManagerService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        int check = checkCallingOrSelfPermission("com.aaron.androiddevart.permission" +
+                ".ACCESS_BOOK_SERVICE");
+        if (check == PackageManager.PERMISSION_DENIED) {
+            return null;
+        }
         return mBinder;
     }
 }
