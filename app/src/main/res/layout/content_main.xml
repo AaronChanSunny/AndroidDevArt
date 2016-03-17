@@ -23,8 +23,43 @@
 
     <com.aaron.androiddevart.view.GestureDetectorView
         android:layout_width="match_parent"
+        android:id="@+id/gesture_detector"
         android:background="@android:color/holo_red_light"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_below="@id/velocity_tracker"
         android:layout_height="40dp"/>
+
+    <com.aaron.androiddevart.view.ScrollEnabledView
+        android:layout_width="match_parent"
+        android:text="Content"
+        android:gravity="center"
+        android:id="@+id/scroll_view"
+        android:background="@android:color/holo_green_light"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@id/gesture_detector"
+        android:layout_height="40dp"/>
+
+    <LinearLayout
+        android:layout_below="@id/scroll_view"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/left_button"
+            android:text="@string/main_left_button_text"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/right_button"
+            android:textAllCaps="false"
+            android:text="@string/main_right_button_text"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 </RelativeLayout>

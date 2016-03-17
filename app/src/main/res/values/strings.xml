@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Android Dev Art</string>
     <string name="action_settings">Settings</string>
+    <string name="main_move_button_text">Move</string>
+    <string name="main_left_button_text">Left</string>
+    <string name="main_right_button_text">Right</string>
 </resources>
