@@ -15,4 +15,8 @@ public class ScrollEnabledView extends TextView {
     public void scrollXByStep(int step) {
         scrollTo(getScrollX() + step, getScrollY());
     }
+
+    public void animateTranslationX(float step) {
+        animate().translationX(step).setDuration(1000).start();
+    }
 }

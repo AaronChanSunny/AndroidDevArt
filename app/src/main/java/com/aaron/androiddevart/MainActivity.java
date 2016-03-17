@@ -35,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.animate_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scrollEnabledView.animateTranslationX(30);
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

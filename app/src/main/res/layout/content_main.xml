@@ -30,7 +30,7 @@
         android:layout_height="40dp"/>
 
     <com.aaron.androiddevart.view.ScrollEnabledView
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:text="Content"
         android:gravity="center"
         android:id="@+id/scroll_view"
@@ -40,6 +40,7 @@
         android:layout_height="40dp"/>
 
     <LinearLayout
+        android:id="@+id/button_layout"
         android:layout_below="@id/scroll_view"
         android:layout_width="match_parent"
         android:orientation="horizontal"
@@ -61,5 +62,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/animate_button"
+        android:layout_below="@id/button_layout"
+        android:textAllCaps="false"
+        android:text="@string/main_animate_button_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>
