@@ -5,4 +5,5 @@
     <string name="main_left_button_text">Left</string>
     <string name="main_right_button_text">Right</string>
     <string name="main_animate_button_text">Animate</string>
+    <string name="main_change_layout_button_text">Change Layout</string>
 </resources>

@@ -42,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.change_layout_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scrollEnabledView.changeLayoutParams(30);
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

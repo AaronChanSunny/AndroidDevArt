@@ -2,6 +2,7 @@ package com.aaron.androiddevart.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
@@ -18,5 +19,11 @@ public class ScrollEnabledView extends TextView {
 
     public void animateTranslationX(float step) {
         animate().translationX(step).setDuration(1000).start();
+    }
+
+    public void changeLayoutParams(int step) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        layoutParams.leftMargin += step;
+        requestLayout();
     }
 }

@@ -71,4 +71,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <Button
+        android:id="@+id/change_layout_button"
+        android:textAllCaps="false"
+        android:layout_below="@id/animate_button"
+        android:text="@string/main_change_layout_button_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>
