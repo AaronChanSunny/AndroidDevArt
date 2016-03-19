@@ -6,4 +6,8 @@
     <string name="main_right_button_text">Right</string>
     <string name="main_animate_button_text">Animate</string>
     <string name="main_change_layout_button_text">Change Layout</string>
+    <string name="title_activity_scroll_view_display">ScrollViewDisplayActivity</string>
+    <string name="scroll_view_display_text">Drag Me</string>
+    <string name="title_activity_view_event_dispatcher">ViewEventDispatcherActivity</string>
+    <string name="view_event_dispatcher1_text">Child Group</string>
 </resources>
