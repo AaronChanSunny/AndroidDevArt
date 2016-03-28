@@ -164,6 +164,7 @@ category 匹配要求，如果 Intent 中含有 category，那么 Intent 中每�
 data 由两部分组成，mimeType 和 URI，它的匹配规则和 action 一样。
 
 > 当为 Activity 指定 data 匹配规则时，可以只指定 mimeType，不指定 URI。因为，当没有指定 URI 时，会有一个默认值，默认值为 content 和 file。
+
 > 为 Intent 指定完整 data 时，需要调用 setDataAndType 方法，不能通过调用 setData 和 setType 组合的方式，因为这两个方法在调用时会互相清除对方的值。
 
 ### 注意
