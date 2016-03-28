@@ -119,7 +119,7 @@ Activity 目标任务栈是由 AndroidManifest 中 Activity 的 taskAffinity 指
 adb shell dumpsys activity
 ```
 
-### 1.2.2 Activity Flags
+### Activity Flags
 
 Activity 的 Flags 有很多，这里只列出日常开发中常用的几个。
 
