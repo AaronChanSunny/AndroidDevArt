@@ -77,3 +77,64 @@ android:configChanges="orientation|screenSize"
 ```
 
 这样，Activity 就不会重建，也没有调用 onSaveInstanceState 和 onRestoreInstanceState，而是调用了 onConfigurationChanged 方法。
+
+## 1.2 Activity 启动模式
+
+### 1.2.1 Activity 的 launchMode
+
+在介绍 Activity 启动模式之前，需要先弄明白任务栈的概念。在默认情况下，当我们启动同一个 Activity 时，Android 会创建多个 Activity 实例，并把它们一一压入栈中，而当我们按 back 键时 Activity 就会一一出栈，当任务栈中没有任何 Activity 任务栈是典型的“后进先出”栈结构。Andriod 提供了 4 种 Activity 启动模式，分别为：standard、singleTop、singleTask 和 singleInstance。
+
+- standard
+
+标准模式，这是系统默认的启动方式。每次启动 Activity 都会创建出一个新的实例，不管这个 Activity 的实例是否存在。在标准模式下，谁启动了这个 Activity，这个 Activity 就运行在启动它的 Activity 所在的任务栈中。例如：Activity A 启动了 Activity B，这里 B 的启动模式是标准模式，那么 B 就会进入到 A 所在的任务栈中。
+
+这里，引申出一个问题。当使用 ApplicationContext 启动一个标准模式的 Activity 时，会抛出异常：
+
+```
+Calling startActivity() from outside of an Activity  context requires the  
+FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
+```
+
+原因很简单，因为 ApplicationContext 没有所谓的任务栈，当用它启动一个标准模式的 Activity 时，启动 Activity 找不到所属任务栈，因此抛出异常。解决的办法很简单，只需指定 Intent 标志位为 FLAG_ACTIVITY_NEW_TASK，这时待启动 Activity 的启动模式其实相当于是 singleTask。
+
+- singleTop
+
+栈顶复用模式。在这种模式下，如果待启动 Activity 已经位于任务栈栈顶，此 Activity 不会重新创建，直接复用现有实例，并且回调 onNewIntent 提取当前请求信息。考虑另一种情况，如果待启动 Activity 已经存在于任务栈，但是不在栈顶，这时候还是会重新创建一个 Activity 实例。
+
+- singleTask
+
+栈内复用模式。在介绍这种模式之前，需要先弄清楚什么是 Activity 目标任务栈？
+
+Activity 目标任务栈是由 AndroidManifest 中 Activity 的 taskAffinity 指定的，如果不指定，默认为应用的包名。taskAffinity 指定的字符串就是该 Activity 目标任务栈。taskAffinity 必须和 singleTask 和 allowTaskReparenting 属性配对使用，单独使用的话没有意义。关于 allowTaskReparenting 属性比较抽象，简单的说，当一个 Activity 的 allowTaskReparenting 设置为 true时，它就具备任务栈转移的能力。举个例子：当应用 A 启动了应用 B 的一个 Activity（启动模式为 standard，taskAffinity为默认值，allowTaskReparenting 为 true），这个 Activity 会被压入 应用 A 所在任务栈中；接下来，当应用 B 启动后，此 Activity 会直接从应用 A 的任务栈转移到应用 B 的任务栈中。
+
+栈内复用模式的情况下，只要待启动 Activity 在一个任务栈中存在，就不会重新创建 Activity，同样会回调 onNewIntent 方法。描述一下具体启动流程：首先，待启动 Activity 会在系统中寻找目标任务栈，如果这个任务栈中存在该 Activity 实例，则直接将 Activity 实例调到栈顶，并且把位于该 Activity 之上的所有 Activity 出栈，即 clearTop 效果，如果这个任务栈中不存在 Activity 实例，直接创建一个新的实例并且入栈；如果待启动 Activity 目标任务栈不存在，则系统会创建一个新的任务栈，并创建该 Activity 实例并入栈。
+
+- singleInstance
+
+单例模式。单例模式除了具有 singleTask 的所有特性外，还具有一个特性，即单例模式 Activity 所在的任务栈中，有且只能有该 Activity 实例。
+
+> 如果一个 Activity 同时在 AndroidManifest 文件和 Intent 中指定启动模式，以 Intent 为准。
+
+**一个非常有用的命令**，可以用来打印任务栈信息：
+
+```
+adb shell dumpsys activity
+```
+
+### 1.2.2 Activity Flags
+
+Activity 的 Flags 有很多，这里只列出日常开发中常用的几个。
+
+- FLAG_ACTIVITY_NEW_TASK
+
+如果在 Intent 中指定这个标志位和在 AndroidManifest 中指定 Activity 启动模式为 singleTask 是一个效果。
+
+- FLAG_ACTIVITY_SINGLE_TOP
+
+如果在 Intent 中指定这个标志位和在 AndroidManifest 中指定 Activity 启动模式为 singleTop 是一个效果。
+
+- FLAG_ACTIVITY_CLEAR_TOP
+
+这个标志位一般会和 singleTask 一起出现，如果在 Intent 中指定这个标志位并且目标任务栈中已存在该 Activity 的实例，位于待启动 Activity 之上的所有 Activity 都会被出栈，并且回调 onNewIntent。 
+
+有一种情况，当待启动 Activity 的启动模式是 standard，并且在 Intent 中使用了这个标志位，如果这时候待启动 Activity 已经在任务栈中，那么它连同它之上的所有 Activity 都会出栈，系统会创建出一个新的 Activity 入栈。
