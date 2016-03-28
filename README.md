@@ -84,7 +84,7 @@ android:configChanges="orientation|screenSize"
 
 在介绍 Activity 启动模式之前，需要先弄明白任务栈的概念。在默认情况下，当我们启动同一个 Activity 时，Android 会创建多个 Activity 实例，并把它们一一压入栈中，而当我们按 back 键时 Activity 就会一一出栈，当任务栈中没有任何 Activity 任务栈是典型的“后进先出”栈结构。Andriod 提供了 4 种 Activity 启动模式，分别为：standard、singleTop、singleTask 和 singleInstance。
 
-- standard
+#### standard
 
 标准模式，这是系统默认的启动方式。每次启动 Activity 都会创建出一个新的实例，不管这个 Activity 的实例是否存在。在标准模式下，谁启动了这个 Activity，这个 Activity 就运行在启动它的 Activity 所在的任务栈中。例如：Activity A 启动了 Activity B，这里 B 的启动模式是标准模式，那么 B 就会进入到 A 所在的任务栈中。
 
@@ -97,11 +97,11 @@ FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
 
 原因很简单，因为 ApplicationContext 没有所谓的任务栈，当用它启动一个标准模式的 Activity 时，启动 Activity 找不到所属任务栈，因此抛出异常。解决的办法很简单，只需指定 Intent 标志位为 FLAG_ACTIVITY_NEW_TASK，这时待启动 Activity 的启动模式其实相当于是 singleTask。
 
-- singleTop
+#### singleTop
 
 栈顶复用模式。在这种模式下，如果待启动 Activity 已经位于任务栈栈顶，此 Activity 不会重新创建，直接复用现有实例，并且回调 onNewIntent 提取当前请求信息。考虑另一种情况，如果待启动 Activity 已经存在于任务栈，但是不在栈顶，这时候还是会重新创建一个 Activity 实例。
 
-- singleTask
+#### singleTask
 
 栈内复用模式。在介绍这种模式之前，需要先弄清楚什么是 Activity 目标任务栈？
 
@@ -109,7 +109,7 @@ Activity 目标任务栈是由 AndroidManifest 中 Activity 的 taskAffinity 指
 
 栈内复用模式的情况下，只要待启动 Activity 在一个任务栈中存在，就不会重新创建 Activity，同样会回调 onNewIntent 方法。描述一下具体启动流程：首先，待启动 Activity 会在系统中寻找目标任务栈，如果这个任务栈中存在该 Activity 实例，则直接将 Activity 实例调到栈顶，并且把位于该 Activity 之上的所有 Activity 出栈，即 clearTop 效果，如果这个任务栈中不存在 Activity 实例，直接创建一个新的实例并且入栈；如果待启动 Activity 目标任务栈不存在，则系统会创建一个新的任务栈，并创建该 Activity 实例并入栈。
 
-- singleInstance
+#### singleInstance
 
 单例模式。单例模式除了具有 singleTask 的所有特性外，还具有一个特性，即单例模式 Activity 所在的任务栈中，有且只能有该 Activity 实例。
 
@@ -125,16 +125,59 @@ adb shell dumpsys activity
 
 Activity 的 Flags 有很多，这里只列出日常开发中常用的几个。
 
-- FLAG_ACTIVITY_NEW_TASK
+#### FLAG_ACTIVITY_NEW_TASK
 
 如果在 Intent 中指定这个标志位和在 AndroidManifest 中指定 Activity 启动模式为 singleTask 是一个效果。
 
-- FLAG_ACTIVITY_SINGLE_TOP
+#### FLAG_ACTIVITY_SINGLE_TOP
 
 如果在 Intent 中指定这个标志位和在 AndroidManifest 中指定 Activity 启动模式为 singleTop 是一个效果。
 
-- FLAG_ACTIVITY_CLEAR_TOP
+#### FLAG_ACTIVITY_CLEAR_TOP
 
 这个标志位一般会和 singleTask 一起出现，如果在 Intent 中指定这个标志位并且目标任务栈中已存在该 Activity 的实例，位于待启动 Activity 之上的所有 Activity 都会被出栈，并且回调 onNewIntent。 
 
 有一种情况，当待启动 Activity 的启动模式是 standard，并且在 Intent 中使用了这个标志位，如果这时候待启动 Activity 已经在任务栈中，那么它连同它之上的所有 Activity 都会出栈，系统会创建出一个新的 Activity 入栈。
+
+#### FLAG_ACTIVITY_EXCLUDE_FROM_RECENT
+
+具有这个标志位的 Activity 不会出现在最近 Activity 列表中。如果我们不希望用户通过最近返回到我们的 Activity，可以使用这个标志位。
+
+## 1.3 IntentFilter 匹配规则
+
+启动 Activity 有两种方式，显示启动和隐式启动。显示启动的话很简单，直接指定待启动 Activity 的组件信息；隐式启动的话比较复杂，涉及到 IntentFilter 匹配过程，只有当 Intent 能够匹配目标组件 IntentFilter 设置的过滤信息时，才能启动该组件。IntentFilter 的过滤信息有三种类型：action、category 和 data。
+
+### action 匹配规则
+
+Intent 中的 action 必须和过滤规则中的 action 匹配。这里的匹配是指，只要 Intent 中的 action 和过滤规则中（过滤规则可以有多个 action）的其中一个 action 匹配即可。action 在这里的匹配时值的匹配，并且大小写敏感。
+
+> 如果 Intent 中没有指定 action，则直接匹配失败。
+
+### category 匹配规则
+
+category 匹配要求，如果 Intent 中含有 category，那么 Intent 中每一个 category 都必须和过滤规则中的其中一个 category 匹配。
+
+> Intent 可以不指定 category，如果不指定 category，在调用 startActivity 或者 startActivityForResult 时会自动为 Intent 加上一个 `android.intent.category.DEFAULT` 这个category。此时，为了使 Activity 能够接收隐式 Intent，需要在 IntentFilter 中加入 `android.intent.category.DEFAULT` 这个category。
+
+### data 匹配规则
+
+data 由两部分组成，mimeType 和 URI，它的匹配规则和 action 一样。
+
+> 当为 Activity 指定 data 匹配规则时，可以只指定 mimeType，不指定 URI。因为，当没有指定 URI 时，会有一个默认值，默认值为 content 和 file。
+> 为 Intent 指定完整 data 时，需要调用 setDataAndType 方法，不能通过调用 setData 和 setType 组合的方式，因为这两个方法在调用时会互相清除对方的值。
+
+### 注意
+
+如果一个 Intent 匹配 IntentFilter 失败，会有两种情况：一种是程序崩溃，例如 data 的 URI 匹配失败；另一种是没有隐式启动后没有任何效果。无论是哪一种情况，都影响到了正常的业务过程。因此，为了提高程序的健壮性，当我们隐式启动 Activity 时，应该先做一个判断。有两个方法可以选择：
+
+- Intent#resolveActivity
+- PackageManager#queryIntentActivities
+
+```
+public abstract ResolveInfo resolveActivity(Intent intent, int flags)
+public abstract List<ResolveInfo> queryIntentActivities(Intent intent, int flags)
+```
+
+对于第二个参数，需要使用 MATCH_DEFAULT_ONLY 这个标志位，具体含义是仅仅匹配那些在 intent-filter 包含 `android.intent.category.DEFAULT` 的 Activity。这样就能保证，只要上述两个方法返回不是 null，startActivity 就一定能成功。因为不含有 `android.intent.category.DEFAULT` 的 Activity 是没办法接收隐式 Intent的。
+
+另外，对于 Service 推荐使用显示启动。
