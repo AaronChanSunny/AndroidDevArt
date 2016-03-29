@@ -112,3 +112,41 @@ return comsumed;
 ```
 
 当然 GestureDetector 只是为我们提供一种手势检测的简便方法，我们完全可以在 View#onTouchEvent 中实现想要的手势检测。具体采用哪种方式实现，取决于具体需求，这里给出一个准则：如果只是想监听滑动相关的事件，直接在 View#onTouchEvent 实现即可；如果需要监听类似双击这类事件的话，可以使用 GestureDetector。
+
+## View 的滑动
+
+实现 View 的滑动有三种方法：
+
+- 使用 View#scrollTo/scrollBy 方法
+- 使用动画
+- 通过改变 View 的 LayoutParams 使 View 重新布局，达到滑动的效果
+
+### 使用 scrollTo/scrollBy 方法
+
+scrollTo 实现 View 的绝对滑动，scrollBy 实现 View 的相对滑动。从源码看，scrollBy 本质上也是通过调用 scrollTo 实现的。要理解 View 的滑动，首先要明白什么是 mScrollX？什么是 mScrollY？
+
+- mScrollX
+mScrollX 可以通过 View#getScrollX() 获得，它的值等于 View 左边缘和 View 内容左边缘在水平方向上的距离。
+- mScrollY
+mScrollY 可以通过 View#getScrollY() 获得，它的值等于 View 上边缘和 View 内容上边缘在竖直方向上的距离。
+
+简单地说，如果从左向右滑动，mScrollX 为负值；如果从右向左滑动，mScrollX 为正值；如果从上向下滑动，mScrollY 为负值，如果从下向上滑动，mScrollY 为正值。
+
+> 使用 scrollTo/scrollBy 方法实现 View 的滑动，只能将 View 的内容进行移动，并不能对 View 本身进行移动。
+
+### 使用动画
+
+Android 中的动画可以分为帧动画、View 动画和属性动画。其中 View 动画只是对 View 的影响做操作，动画结束后 View 的位置和属性并不会发生变化。例如：对一个按钮使用 View 动画，当动画结束后，按钮的点击失效。从 Android 3.0 开始引入的属性动画就没有这个问题，因为属性动画是通过反射直接操作 View 的属性。
+
+使用动画实现 View 的滑动效果，是通过对 View 的 translationX 和 translationY 做动画实现的。由于 translationX 和 translationY 是左上角坐标相对于父容器的偏移量，因此是对整个 View 进行滑动操作。
+
+### 改变布局参数
+
+通过改变 LayoutParams，对 View 重新布局来实现 View 的滑动。例如：
+
+```
+MarginLayoutParams params = (MarginLayoutParams)mButton.getLayoutParams();
+params.width += 100;
+params.leftMargin += 100;
+mButton.requestLayout();
+```
