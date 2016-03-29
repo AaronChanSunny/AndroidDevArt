@@ -69,6 +69,46 @@ TouchSlop 是系统所能识别的滑动最小距离。当手指在屏幕上移�
     <dimen name="config_viewConfigurationTouchSlop">8dp</dimen>
 ```
 
-- VelocityTracker
-- GestureDetector
-- Scroller
+### VelocityTracker
+
+速度追踪器，用于追踪手指在屏幕上的滑动速度，这里的滑动速度应该理解成数学里的矢量速度，即包括水平方向的速度和竖直方向的速度。使用方法如下，首先是获取一个速度追踪器，添加需要追踪的事件：
+
+```
+VelocityTracker tracker = VelocityTracker.obtain();
+tracker.addMovement(event);
+```
+
+接下来，通过 tracker 计算速度，然后分别获取水平速度和竖直速度：
+
+```
+tracker.computeCurrentVelocity(1000);
+int vx = tracker.getXVelocity();
+int vy = tracker.getYVelocity(); 
+```
+
+上述代码片段就是计算 1000ms 内，手指在屏幕水平方向和竖直方向所滑过像素点数。速度的计算公式如下：
+
+速度 = （终点位置 - 起始位置）/ 时间段
+
+根据屏幕坐标系的正方向可以得出：当手指沿着坐标系正方向滑动时，速度为正数；当手指逆着坐标系正方向滑动时，速度为负数。
+
+最后，当需要清空 VelocityTracker 数据时，调用 VelocityTracker#clear() 方法；当不再需要 VelocityTracker 时，调用 VelocityTracker#recycle() 进行释放。
+
+### GestureDetector
+
+可以使用 GestureDetector 进行用户操作的手势检测。常见的包括单击、滑动、快速滑动、长按、双击等行为。使用方法是，首先创建一个 GestureDetector 实例，并实现 OnGestureListener 或者 onDoubleTapListener 接口：
+
+```
+GestureDetector mDetector = new GestureDetector(this);
+```
+
+> GestureDetector#setIsLongpressEnabled(false) 可以解决长按屏幕后无法拖动的现象。
+
+接下来，接管 View#onTouchEvent 方法：
+
+```
+boolean comsumed = mDetector.onTouchEvent(event);
+return comsumed;
+```
+
+当然 GestureDetector 只是为我们提供一种手势检测的简便方法，我们完全可以在 View#onTouchEvent 中实现想要的手势检测。具体采用哪种方式实现，取决于具体需求，这里给出一个准则：如果只是想监听滑动相关的事件，直接在 View#onTouchEvent 实现即可；如果需要监听类似双击这类事件的话，可以使用 GestureDetector。
