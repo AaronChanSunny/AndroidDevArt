@@ -150,3 +150,34 @@ params.width += 100;
 params.leftMargin += 100;
 mButton.requestLayout();
 ```
+
+## 弹性滑动
+
+实现弹性滑动的思想是相通的，即将一次大的滑动分解成若干次小的滑动，并在一个时间段内完成。具体的实现方式有：
+
+- 使用 Scroller
+
+使用 Scroller 实现弹性滑动的代码如下：
+
+```
+mScroller = new Scroller(mContext);
+
+public void smoothScrollTo(int destX, int desY) {
+    int scrollX = getScrollX();
+    int deltaX = destX - scrollX;
+    mScroller.startScroll(scrollX, 0, deltaX, 0, 1000);
+    invalidate();
+}
+@Override
+public void computeScroll() {
+    if (mScroller.computeScrollOffset()) {
+        scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+        postInvalidate();
+    }
+}
+```
+
+Scroller 本身并不能实现 View 的滑动，它需要配合 View 的 computeScroll 方法才能完成弹性滑动效果。Scroller 不断让 View 重绘，每一次重绘距离滑动起始时间会有一个时间间隔，通过这个时间间隔计算出需要滑动的百分比，根据百分比得到 View 需要滑动到的位置，滑动直接调用 scrollTo() 方法。
+
+- 通过动画
+- 使用延时策略
