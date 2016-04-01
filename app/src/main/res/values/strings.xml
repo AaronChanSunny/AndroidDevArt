@@ -10,4 +10,5 @@
     <string name="scroll_view_display_text">Drag Me</string>
     <string name="title_activity_view_event_dispatcher">ViewEventDispatcherActivity</string>
     <string name="view_event_dispatcher1_text">Child Group</string>
+    <string name="title_activity_smooth_scroll">SmoothScrollActivity</string>
 </resources>
