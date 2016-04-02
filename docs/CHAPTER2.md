@@ -199,4 +199,86 @@ animator.start();
 
 - 使用延时策略
 
-通过对 View 发送一系列延时消息从而达到一种渐进式的效果。发送延时消息可以使用 Handler 或者 View 的 postDelayed 方法，在接收消息的位置，使用 scrollTo() 方法对 View 进行滑动。
+通过对 View 发送一系列延时消息从而达到一种渐进式的效果。发送延时消息可以使用 Handler 的 sendEmptyMessageDelkayed 方法或者 View 的 postDelayed 方法，在接收消息的位置，使用 scrollTo() 方法对 View 进行滑动。例如：
+
+```
+private int mCount = 0;
+private static final int MAX_FRAME = 30;
+private int destX = 200;
+private Handler mHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case SCROLL_TO:
+                mCount++;
+                if (mCount < MAX_FRAME) {
+                    float fraction = mCount / (float) MAX_FRAME;
+                    scrollTo((int) (fraction * destX), 0);
+                    mHandler.sendEmptyMessageDelayed(SCROLL_TO, 33);
+                } else {
+                    mCount = 0;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+};
+
+public void smoothScrollTo2() {
+    mHandler.sendEmptyMessage(SCROLL_TO);
+}
+```
+
+## View 的事件分发机制
+
+事件分发过程由三个方法共同完成：dispatchTouchEvent、onInterceptTouchEvent 和 onTouchEvent。现在分别介绍如下：
+
+- public boolean dispatchTouchEvent(MotionEvent event)
+
+用来进行事件分发。如果事件能够传递到当前 View，此方法一定会被首先调用，返回值由当前 View 的 onTouchEvent 和子 View 的 dispatchTouchEvent 共同决定，表示是否消耗当前事件。
+
+- public boolean onInterceptTouchEvent(MotionEvent event)
+
+只有 ViewGroup 包含此方法，View 没有该方法。在 dispatchTouchEvent 内部调用，用来判断是否拦截某个事件，如果当前 View 拦截了某个事件，那么同一事件序列中，此方法不会被再次调用，返回结果表示是否拦截当前事件。
+
+- public boolean onTouchEvent(MotionEvent event)
+
+同样在 dispatchTouchEvent 内部调用，用来处理点击事件，返回结果表示是否消耗当前事件。如果不消耗，在同一事件序列中，当前 View 无法再次接收到事件。
+
+这三个方法之间的关系可以用如下伪代码表示：
+
+```
+public boolean dispatchTouchEvent(MotionEvent event) {
+    boolean consumed = false;
+    if (onInterceptTouchEvent(event)) {
+        consumed = onTouchEvent(event);
+    } else {
+        consumed = child.dispatchTouchEvent(event);
+    }
+    
+    return consumed;
+}
+```
+
+当一个 View 需要处理事件时，如果它设置了 OnTouchListener，那么 OnTouchListener 中的 onTouch 方法会被调用。如果 onTouch 返回 false，则当前 View 的 onTouchEvent 会被调用；如果 onTouch 返回 true，那么 onTouchEvent 将不会被调用。由此可见，如果给 View 设置 OnTouchListener，其优先级比 onTouchEvent 更高。
+
+在 onTouchEvent 方法中，如果当前 View 设置了 OnClickListener，那么它的 onClick 方法会被调用。由此可见，OnClickListener 的优先级最低。
+
+当一个点击事件产生后，它的传递顺序：Activity－Window－View，当事件传递到顶级 View，顶级 View 接收到事件后就按照事件分发机制去分发事件。
+
+如果一个 View 的 onTouchEvent 返回 false，那么它的父容器的 onTouchEvent 将会被调用。依此类推，如果所有的 View 都不处理这个事件，这个事件最终会传递给 Activity 处理，即 Activity 的 onTouchEvent 方法会被调用。
+
+### 事件传递规则
+
+- 同一个事件序列是指从手指接触屏幕的那一刻起，到手指离开屏幕的那一刻结束。在这个过程中所产生的一系列事件，这个事件序列以 down 事件开始，中间含有数量不定的 move 事件，最终以 up 结束。
+- 正常情况下，一个事件序列只能被一个 View 拦截并且消耗。只要一个 View 拦截了某一事件，那么同一事件序列内的所有事件都会交给它处理。
+- 某个 View 一旦决定拦截，那么这一事件序列都只能由它来处理，并且它的 onInterceptTouchEvent 将不会被再调用。
+- 某个 View 一旦开始处理事件，如果它不消耗 ACTION_DOWN 事件，那么同一事件序列的其他事件都不会再交给它处理，并且事件将重新交给它的父容器去处理，即父容器的 onTouchEvent 会被调用。
+- 如果 View 不消耗除 ACTION_DOWN 以外的其他事件，这个点击事件会消失，此时父容器的 onTouchEvent 并不会被调用，并且当前 View 可以持续收到后续事件，最终这些消失的点击事件会传递给 Activity 处理。
+- ViewGroup 默认不拦截任何事件。
+- View 没有 onInterceptTouchEvent 方法，一旦有点击事件传递给它，它的 onTouchEvent 就会被调用。
+- View 的 onTouchEvent 默认都会消耗事件，除非它是不可点击的，所谓不可点击是 clickable 和 longClickable 同时为 false。需要注意的是 View 的 longClickable 默认为 false；而 clickable 要分情况，比如 Button 默认为 true，而 TextView 默认为 false。
+- View 的 enabled 属性不影响 onTouchEvent 的默认返回值。
+- onClick 会触发的前提是当前 View 是可点击的，并且它收到了 down 和 up 事件。
+- 事件传递的顺序是由外向内的，即事件总是先传递给父容器，然后再由父容器分发给子 View。但是通过 requestDisallowInterceptTouchEvent 方法可以在子 View 干预父容器的事件分发，ACTION_DOWN 除外。这点是处理滑动冲突，内部拦截法的基础。
