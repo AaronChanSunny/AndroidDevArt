@@ -180,4 +180,23 @@ public void computeScroll() {
 Scroller 本身并不能实现 View 的滑动，它需要配合 View 的 computeScroll 方法才能完成弹性滑动效果。Scroller 不断让 View 重绘，每一次重绘距离滑动起始时间会有一个时间间隔，通过这个时间间隔计算出需要滑动的百分比，根据百分比得到 View 需要滑动到的位置，滑动直接调用 scrollTo() 方法。
 
 - 通过动画
+
+动画本身就是一个渐进的过程，如果需要实现弹性滑动，只需要对 View 的属性（例如 translationX）做动画即可。如果使用属性动画，我们能够使用 ValueAnimator 实现 Scroller 效果：
+
+```
+ValueAnimator animator = ValueAnimator.ofFloat(0, 1)
+        .setDuration(1000);
+animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        float fraction = animation.getAnimatedFraction();
+        Log.d(TAG, "onAnimationUpdate, fraction is " + fraction);
+        scrollTo((int) (fraction * destX), 0);
+    }
+});
+animator.start();
+```
+
 - 使用延时策略
+
+通过对 View 发送一系列延时消息从而达到一种渐进式的效果。发送延时消息可以使用 Handler 或者 View 的 postDelayed 方法，在接收消息的位置，使用 scrollTo() 方法对 View 进行滑动。
