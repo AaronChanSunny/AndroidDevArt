@@ -248,6 +248,7 @@ public void smoothScrollTo2() {
 
 这三个方法之间的关系可以用如下伪代码表示：
 
+如果是 ViewGroup：
 ```
 public boolean dispatchTouchEvent(MotionEvent event) {
     boolean consumed = false;
@@ -258,6 +259,13 @@ public boolean dispatchTouchEvent(MotionEvent event) {
     }
     
     return consumed;
+}
+```
+
+如果是 View：
+```
+public boolean dispatchTouchEvent(MotionEvent event) {
+    return onTouchEvent(event);
 }
 ```
 
